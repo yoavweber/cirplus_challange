@@ -19,10 +19,10 @@ function _getBoardCoord(location: number, border: number) {
   return location;
 }
 
-function getColumCoord(location: number): number {
+export function getColumCoord(location: number): number {
   return _getBoardCoord(location, COLUMN_BOARD_SIZE);
 }
 
-function getRowCoord(location: number): number {
+export function getRowCoord(location: number): number {
   return _getBoardCoord(location, ROW_BOARD_SIZE);
 }
