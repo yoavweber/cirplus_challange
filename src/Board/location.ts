@@ -48,3 +48,72 @@ export function genRandomBoardLocation(): Location {
   return { Column: column, Row: row };
 }
 
+//  ------------------------------- generating entities locations ---------------------
+function _placeInitEntityLocation(
+  board: Board,
+  entity: Entities,
+  genBoardLocation: () => Location,
+  errCounter = 5
+): Board {
+  const location = genBoardLocation();
+  if (errCounter === 0) {
+    throw new Error(
+      "Can't generate random entity locatio, please check that the genBoardLocation working as expected"
+    );
+  }
+  if (getBoardLocationData(board, location) === Entities.Empty) {
+    return _updateEntityLocation(location, board, entity);
+  }
+  return _placeInitEntityLocation(
+    board,
+    entity,
+    genBoardLocation,
+    errCounter - 1
+  );
+}
+
+function _placeUserInitLocation(
+  board: Board,
+  genBoardLocation: () => Location
+): Board {
+  return _placeInitEntityLocation(board, Entities.User, genBoardLocation);
+}
+
+function _placePBInitLocation(
+  board: Board,
+  genBoardLocation: () => Location
+): Board {
+  return _placeInitEntityLocation(board, Entities.PB, genBoardLocation);
+}
+
+// TODO: add docs to the function
+function _placeGPgpInitLocation(genBoardLocation: () => Location): Board {
+  const board = generateEmptyBoard();
+  const location = genBoardLocation();
+  let locations = [];
+  // TODO: clean it
+  for (const directionStr in moveBoard) {
+    let deraction = directionStr as Directions;
+    let step = moveBoard[deraction](1);
+    // TODO:create an append function
+    let newLocation: Location = {
+      Column: step.Column + location.Column,
+      Row: step.Row + location.Row,
+    };
+    locations.push(newLocation);
+  }
+  return updatePGpgLocation(locations, board);
+}
+
+export function initBoard(genBoardLocation: () => Location) {
+  const boardWithGPgp = _placeGPgpInitLocation(genRandomBoardLocation);
+  const boardWithUserAndGpgp = _placeUserInitLocation(
+    boardWithGPgp,
+    genBoardLocation
+  );
+  const boardWithAllEntities = _placePBInitLocation(
+    boardWithUserAndGpgp,
+    genBoardLocation
+  );
+  return boardWithAllEntities;
+}
