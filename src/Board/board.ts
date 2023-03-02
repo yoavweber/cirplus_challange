@@ -26,3 +26,11 @@ export function getColumCoord(location: number): number {
 export function getRowCoord(location: number): number {
   return _getBoardCoord(location, ROW_BOARD_SIZE);
 }
+
+export function getBoardLocationData(
+  board: Board,
+  location: Location
+): Entities {
+  return board[location.Column][location.Row];
+}
+
