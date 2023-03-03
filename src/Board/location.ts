@@ -98,8 +98,12 @@ function _placePBInitLocation(
 function _placeGPgpInitLocation(genBoardLocation: GenBoardLocationFunc): Board {
   const board = generateEmptyBoard();
   const location = genBoardLocation();
-  let locations = [];
-  // TODO: clean it
+  let locations = generateGPgp(location);
+  return updatePGpgLocation(locations, board);
+}
+
+export function generateGPgp(location: Location): Location[] {
+  let locations = [location];
   for (const directionStr in moveBoard) {
     let deraction = directionStr as Directions;
     let step = moveBoard[deraction](1);
@@ -110,7 +114,7 @@ function _placeGPgpInitLocation(genBoardLocation: GenBoardLocationFunc): Board {
     };
     locations.push(newLocation);
   }
-  return updatePGpgLocation(locations, board);
+  return locations;
 }
 
 export function initBoard(
