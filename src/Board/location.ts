@@ -49,10 +49,12 @@ export function genRandomBoardLocation(): Location {
 }
 
 //  ------------------------------- generating entities locations ---------------------
+type GenBoardLocationFunc = () => Location;
+
 function _placeInitEntityLocation(
   board: Board,
   entity: Entities,
-  genBoardLocation: () => Location,
+  genBoardLocation: GenBoardLocationFunc,
   errCounter = 5
 ): Board {
   const location = genBoardLocation();
@@ -74,20 +76,20 @@ function _placeInitEntityLocation(
 
 function _placeUserInitLocation(
   board: Board,
-  genBoardLocation: () => Location
+  genBoardLocation: GenBoardLocationFunc
 ): Board {
   return _placeInitEntityLocation(board, Entities.User, genBoardLocation);
 }
 
 function _placePBInitLocation(
   board: Board,
-  genBoardLocation: () => Location
+  genBoardLocation: GenBoardLocationFunc
 ): Board {
   return _placeInitEntityLocation(board, Entities.PB, genBoardLocation);
 }
 
 // TODO: add docs to the function
-function _placeGPgpInitLocation(genBoardLocation: () => Location): Board {
+function _placeGPgpInitLocation(genBoardLocation: GenBoardLocationFunc): Board {
   const board = generateEmptyBoard();
   const location = genBoardLocation();
   let locations = [];
@@ -105,8 +107,8 @@ function _placeGPgpInitLocation(genBoardLocation: () => Location): Board {
   return updatePGpgLocation(locations, board);
 }
 
-export function initBoard(genBoardLocation: () => Location) {
-  const boardWithGPgp = _placeGPgpInitLocation(genRandomBoardLocation);
+  getBoardLocationPerEntity: GenBoardLocationPerEntitiy
+) {
   const boardWithUserAndGpgp = _placeUserInitLocation(
     boardWithGPgp,
     genBoardLocation
