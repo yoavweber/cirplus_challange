@@ -1,3 +1,4 @@
+// TODO: maybe change file name
 import { deepClone, randomIntFromInterval } from "../logic/utils";
 import { Entities, Location } from "../Enteties/enteties";
 import {
@@ -7,7 +8,7 @@ import {
   getBoardLocationData,
   COLUMN_BOARD_SIZE,
   ROW_BOARD_SIZE,
-  generateBoard,
+  generateEmptyBoard,
 } from "./board";
 import { moveBoard, Directions } from "../Dice/dice";
 

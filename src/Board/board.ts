@@ -5,13 +5,13 @@ export const ROW_BOARD_SIZE = 24;
 
 export type Board = Entities[][];
 
-export function generateBoard(): Entities[][] {
+export function generateEmptyBoard(): Board {
   const rowArray: Entities[] = new Array(ROW_BOARD_SIZE).fill(Entities.Empty);
   const arr: Board = new Array(COLUMN_BOARD_SIZE).fill(rowArray);
   return arr;
 }
 
-// TODO: change the name
+// TODO: change the name to something with board bounds
 function _getBoardCoord(location: number, border: number) {
   if (location > border) {
     _getBoardCoord(location - border, border);
