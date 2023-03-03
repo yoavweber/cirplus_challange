@@ -1,4 +1,4 @@
-type MaybeArray<T> = T | T[];
+import { MaybeArray } from "./types";
 
 export const deepClone = <T>(items: MaybeArray<T>[]): MaybeArray<T>[] =>
   items.map((item) =>
