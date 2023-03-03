@@ -12,35 +12,52 @@ import {
 } from "./board";
 import { moveBoard, Directions } from "../Dice/dice";
 
+type EntityLocation = [Board, Location[]];
+
 function _updateEntityLocation(
   location: Location,
   board: Board,
   entity: Entities
-): Board {
+): EntityLocation {
   let clonedBoard = deepClone(board) as Board;
   const adjustedLocation: Location = {
     Column: getColumCoord(location.Column),
     Row: getRowCoord(location.Row),
   };
   clonedBoard[adjustedLocation.Column][adjustedLocation.Row] = entity;
-  return clonedBoard;
+  return [clonedBoard, [adjustedLocation]];
 }
 
-export function updateUserLocation(location: Location, board: Board): Board {
+export function updateUserLocation(
+  location: Location,
+  board: Board
+): EntityLocation {
   return _updateEntityLocation(location, board, Entities.User);
 }
 
-export function updatePBLocation(location: Location, board: Board): Board {
+export function updatePBLocation(
+  location: Location,
+  board: Board
+): EntityLocation {
   return _updateEntityLocation(location, board, Entities.PB);
 }
 
-export function updatePGpgLocation(locations: Location[], board: Board): Board {
+export function updatePGpgLocation(
+  locations: Location[],
+  board: Board,
+  updatedLocations: Location[]
+): EntityLocation {
   const location = locations.pop();
   if (location === undefined) {
-    return board;
+    return [board, updatedLocations];
   }
-  const updatedBoard = _updateEntityLocation(location, board, Entities.GPgp);
-  return updatePGpgLocation(locations, updatedBoard);
+  const [updatedBoard, updatedlocation] = _updateEntityLocation(
+    location,
+    board,
+    Entities.GPgp
+  );
+  updatedLocations = updatedLocations.concat(updatedlocation);
+  return updatePGpgLocation(locations, updatedBoard, updatedLocations);
 }
 
 export function genRandomBoardLocation(): Location {
@@ -63,7 +80,7 @@ function _placeInitEntityLocation(
   entity: Entities,
   genBoardLocation: GenBoardLocationFunc,
   errCounter = 5
-): Board {
+): EntityLocation {
   const location = genBoardLocation();
   if (errCounter === 0) {
     throw new Error(
@@ -84,23 +101,25 @@ function _placeInitEntityLocation(
 function _placeUserInitLocation(
   board: Board,
   genBoardLocation: GenBoardLocationFunc
-): Board {
+): EntityLocation {
   return _placeInitEntityLocation(board, Entities.User, genBoardLocation);
 }
 
 function _placePBInitLocation(
   board: Board,
   genBoardLocation: GenBoardLocationFunc
-): Board {
+): EntityLocation {
   return _placeInitEntityLocation(board, Entities.PB, genBoardLocation);
 }
 
 // TODO: add docs to the function
-function _placeGPgpInitLocation(genBoardLocation: GenBoardLocationFunc): Board {
+function _placeGPgpInitLocation(
+  genBoardLocation: GenBoardLocationFunc
+): EntityLocation {
   const board = generateEmptyBoard();
   const location = genBoardLocation();
   let locations = generateGPgp(location);
-  return updatePGpgLocation(locations, board);
+  return updatePGpgLocation(locations, board, []);
 }
 
 export function generateGPgp(location: Location): Location[] {
@@ -118,19 +137,25 @@ export function generateGPgp(location: Location): Location[] {
   return locations;
 }
 
+// TODO: change naming
+type UserLocation = Location[];
+type PbLocation = Location[];
+type GPgpLocation = Location[];
+
+type InitBoardReturn = [Board, [UserLocation, PbLocation, GPgpLocation]];
 export function initBoard(
   getBoardLocationPerEntity: GenBoardLocationPerEntitiy
-) {
-  const boardWithGPgp = _placeGPgpInitLocation(
+): InitBoardReturn {
+  const [boardWithGPgp, GPgpLocation] = _placeGPgpInitLocation(
     getBoardLocationPerEntity[Entities.GPgp]
   );
-  const boardWithUserAndGpgp = _placeUserInitLocation(
+  const [boardWithUserAndGpgp, userLocation] = _placeUserInitLocation(
     boardWithGPgp,
     getBoardLocationPerEntity[Entities.User]
   );
-  const boardWithAllEntities = _placePBInitLocation(
+  const [boardWithAllEntities, pbLocation] = _placePBInitLocation(
     boardWithUserAndGpgp,
     getBoardLocationPerEntity[Entities.PB]
   );
-  return boardWithAllEntities;
+  return [boardWithAllEntities, [userLocation, pbLocation, GPgpLocation]];
 }
