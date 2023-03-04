@@ -2,7 +2,14 @@ import { assign, createMachine } from "xstate";
 import { initBoard, GenBoardLocationPerEntitiy } from "../Board/location";
 import { Board } from "../Board/board";
 import { Maybe } from "../logic/types";
-import { Location } from "../Enteties/enteties";
+
+const playerWon = (playerLocation: Location, GPgpLocation: Location[]) => {
+  return GPgpLocation.some(
+    (location) =>
+      location.Row === playerLocation.Row &&
+      location.Column === playerLocation.Column
+  );
+};
 
 export function createGameMachine(
   genBoardLocation: GenBoardLocationPerEntitiy,
@@ -84,11 +91,26 @@ export function createGameMachine(
             ],
           },
         },
+        pbWon: {
+          type: "final",
+        },
+        userWon: {
+          type: "final",
+        },
       },
-      playGame: {
-        type: "final",
+    },
+    {
+      guards: {
+        ifUserWon: (context, event) => {
+          return playerWon(context.userLocation, context.GPgpLocation);
+        },
+        ifPbWon: (context, event) => {
+          return playerWon(context.pbLocation, context.GPgpLocation);
+        },
       },
-      // on: MAKE_MOVE: {
+    }
+  );
+}
 
       // }
       // },
