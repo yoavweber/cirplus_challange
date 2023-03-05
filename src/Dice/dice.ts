@@ -32,3 +32,29 @@ export const moveBoard: MoveBoard = {
   Southwest: (move: number) => ({ Column: -move, Row: -move }),
 };
 
+function roleDirectionDice(
+  roleDice: () => number,
+  userTurn: Direction,
+  pbTurn: Direction
+): Direction {
+  const allowedDirections = getAllowedDirections(userTurn, pbTurn);
+  const res = roleDice();
+  return allowedDirections[res];
+}
+
+function roleMoveDice(roleDice: () => number): number {
+  return roleDice();
+}
+
+function getAllowedDirections(
+  prevUserDirection: Direction,
+  prevBottleDirection: Direction
+): Direction[] {
+  const allowedDirection = Object.keys(Direction)
+    .filter(
+      (direction) =>
+        direction != prevBottleDirection || direction != prevUserDirection
+    )
+    .map((elm) => elm as Direction);
+  return allowedDirection;
+}
