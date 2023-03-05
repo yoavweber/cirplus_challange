@@ -56,7 +56,7 @@ export function createGameMachine(
   return createMachine(
     {
       predictableActionArguments: true,
-      initial: "playGame",
+      initial: "idle",
       schema: {
         context: {} as MachineContext,
       },
@@ -76,9 +76,10 @@ export function createGameMachine(
           on: {
             START_GAME: {
               target: "playGame",
+              actions: "initBoard",
             },
           },
-          exit: ["initBoard", "playPbTurn"],
+          exit: ["playPbTurn"],
         },
         playGame: {
           always: [
