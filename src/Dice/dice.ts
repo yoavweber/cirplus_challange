@@ -58,3 +58,22 @@ function getAllowedDirections(
     .map((elm) => elm as Direction);
   return allowedDirection;
 }
+
+export type Turn = {
+  move: number;
+  direction: Direction;
+};
+export type DiceFuncs = {
+  move: () => number;
+  direction: () => number;
+};
+
+export function playTurn(
+  userTurn: Direction,
+  pbTurn: Direction,
+  diceFunc: DiceFuncs
+): Turn {
+  const move = roleMoveDice(diceFunc.move);
+  const direction = roleDirectionDice(diceFunc.direction, userTurn, pbTurn);
+  return { move: move, direction: direction };
+}
