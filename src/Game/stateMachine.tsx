@@ -1,6 +1,6 @@
-import { assign, createMachine } from "xstate";
+import { createMachine } from "xstate";
 import { initBoard, GenBoardLocationPerEntitiy } from "../Board/location";
-import { Board } from "../Board/board";
+import { Board, generateEmptyBoard } from "../Board/board";
 import { Maybe } from "../logic/types";
 import {
   Location,
@@ -53,10 +53,9 @@ export function createGameMachine(
   genBoardLocation: GenBoardLocationPerEntitiy,
   roleDiceFunc: DiceFuncs
 ) {
-  const [board, [userLocation, PbLocation, GPgpLocation]] =
-    initBoard(genBoardLocation);
   return createMachine(
     {
+      predictableActionArguments: true,
       initial: "playGame",
       schema: {
         context: {} as MachineContext,
@@ -73,34 +72,23 @@ export function createGameMachine(
       },
 
       states: {
+        idle: {
+          on: {
+            START_GAME: {
+              target: "playGame",
+            },
+          },
+          exit: ["initBoard", "playPbTurn"],
+        },
         playGame: {
           always: [
             { target: "userWon", cond: "ifUserWon" },
             { target: "pbWon", cond: "ifPbWon" },
           ],
           on: {
-            PB_TURN: [
-              {
-                target: "pbWon",
-                cond: "ifPbWon",
-              },
-              {
-                actions: assign((context) => {
-                  return executeTurn(context, movePB, roleDiceFunc);
-                }),
-              },
-            ],
-            PLAYER_TURN: [
-              {
-                target: "userWon",
-                cond: "ifUserWon",
-              },
-              {
-                actions: assign((context) => {
-                  return executeTurn(context, moveUser, roleDiceFunc);
-                }),
-              },
-            ],
+            TURN: {
+              actions: ["playUserTurn", "playPbTurn"],
+            },
           },
         },
         pbWon: {
@@ -163,4 +151,21 @@ export function createGameMachine(
             return res;
           }
         },
+        initBoard: (context, _) => {
+          const [board, [userLocation, PbLocation, GPgpLocation]] =
+            initBoard(genBoardLocation);
+          context.board = board;
+          context.userLocation = userLocation[0];
+          context.pbLocation = PbLocation[0];
+          context.GPgpLocation = GPgpLocation;
+          return {
+            board: board,
+            userLocation: userLocation[0],
+            pbLocation: PbLocation[0],
+            GPgpLocation: GPgpLocation,
+          };
+        },
+      },
+    }
+  );
 }
