@@ -10,6 +10,15 @@ import {
 } from "../Enteties/enteties";
 import { Direction, playTurn, DiceFuncs, Turn } from "../Dice/dice";
 
+export interface MachineContext {
+  board: Board;
+  userLocation: Maybe<Location>;
+  pbLocation: Maybe<Location>;
+  GPgpLocation: Maybe<Location[]>;
+  pbLastTurn: Direction;
+  userLastTurn: Direction;
+  pbTurn: boolean;
+}
 
 const playerWon = (playerLocation: Location, GPgpLocation: Location[]) => {
   return GPgpLocation.some(
@@ -20,7 +29,10 @@ const playerWon = (playerLocation: Location, GPgpLocation: Location[]) => {
 };
 
 function executeTurn(
-  context: Context,
+  userLastTurn: Direction,
+  pbLastTurn: Direction,
+  playerLocation: Location,
+  oldBoard: Board,
   movePlayer: (
     turn: Turn,
     board: Board,
@@ -28,16 +40,12 @@ function executeTurn(
   ) => EntityLocation,
   roleDiceFunc: DiceFuncs
 ) {
-  const turn = playTurn(context.userLastTurn, context.pbLastTurn, roleDiceFunc);
-  const [board, location] = movePlayer(turn, context.board, context.pbLocation);
-  context.pbLastTurn = turn.direction;
-  context.board = board;
-  context.pbLocation = location[0];
-
+  const turn = playTurn(userLastTurn, pbLastTurn, roleDiceFunc);
+  const [board, location] = movePlayer(turn, oldBoard, playerLocation);
   return {
-    pbLastTurn: turn.direction,
+    playerLastTurn: turn.direction,
     board: board,
-    pbLocation: location[0],
+    playerLocation: location[0],
   };
 }
 
@@ -51,16 +59,17 @@ export function createGameMachine(
     {
       initial: "playGame",
       schema: {
-        context: {} as Context,
+        context: {} as MachineContext,
       },
       context: {
-        board: board,
-        userLocation: userLocation[0],
-        pbLocation: PbLocation[0],
-        GPgpLocation: GPgpLocation,
+        board: generateEmptyBoard(),
+        userLocation: null,
+        pbLocation: null,
+        GPgpLocation: null,
         // TODO: ask him what is the default
         pbLastTurn: Direction.North,
         userLastTurn: Direction.South,
+        pbTurn: true,
       },
 
       states: {
@@ -104,21 +113,54 @@ export function createGameMachine(
     },
     {
       guards: {
-        ifUserWon: (context, event) => {
-          return playerWon(context.userLocation, context.GPgpLocation);
+        ifUserWon: (context, _) => {
+          const { userLocation, GPgpLocation } = context;
+          if (userLocation && GPgpLocation) {
+            return playerWon(userLocation, GPgpLocation);
+          }
+          return false;
         },
-        ifPbWon: (context, event) => {
-          return playerWon(context.pbLocation, context.GPgpLocation);
+        ifPbWon: (context, _) => {
+          const { pbLocation, GPgpLocation } = context;
+          if (pbLocation && GPgpLocation) {
+            return playerWon(pbLocation, GPgpLocation);
+          }
+          return false;
         },
       },
-    }
-  );
-}
-
-      // }
-      // },
-      // win: { type: 'final' },
-      // lose: { type: 'final' }
-    },
-  });
+      actions: {
+        playPbTurn: (context, _) => {
+          const { userLastTurn, pbLastTurn, pbLocation, board } = context;
+          if (pbLocation) {
+            const res = executeTurn(
+              userLastTurn,
+              pbLastTurn,
+              pbLocation,
+              board,
+              movePB,
+              roleDiceFunc
+            );
+            context.board = res.board;
+            context.pbLastTurn = res.playerLastTurn;
+            context.pbLocation = res.playerLocation;
+            return res;
+          }
+        },
+        playUserTurn: (context, _) => {
+          const { userLastTurn, pbLastTurn, userLocation, board } = context;
+          if (userLocation) {
+            const res = executeTurn(
+              userLastTurn,
+              pbLastTurn,
+              userLocation,
+              board,
+              movePB,
+              roleDiceFunc
+            );
+            context.board = res.board;
+            context.userLastTurn = res.playerLastTurn;
+            context.userLocation = res.playerLocation;
+            return res;
+          }
+        },
 }
