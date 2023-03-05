@@ -2,6 +2,14 @@ import { assign, createMachine } from "xstate";
 import { initBoard, GenBoardLocationPerEntitiy } from "../Board/location";
 import { Board } from "../Board/board";
 import { Maybe } from "../logic/types";
+import {
+  Location,
+  movePB,
+  moveUser,
+  EntityLocation,
+} from "../Enteties/enteties";
+import { Direction, playTurn, DiceFuncs, Turn } from "../Dice/dice";
+
 
 const playerWon = (playerLocation: Location, GPgpLocation: Location[]) => {
   return GPgpLocation.some(
@@ -10,6 +18,28 @@ const playerWon = (playerLocation: Location, GPgpLocation: Location[]) => {
       location.Column === playerLocation.Column
   );
 };
+
+function executeTurn(
+  context: Context,
+  movePlayer: (
+    turn: Turn,
+    board: Board,
+    prevLocation: Location
+  ) => EntityLocation,
+  roleDiceFunc: DiceFuncs
+) {
+  const turn = playTurn(context.userLastTurn, context.pbLastTurn, roleDiceFunc);
+  const [board, location] = movePlayer(turn, context.board, context.pbLocation);
+  context.pbLastTurn = turn.direction;
+  context.board = board;
+  context.pbLocation = location[0];
+
+  return {
+    pbLastTurn: turn.direction,
+    board: board,
+    pbLocation: location[0],
+  };
+}
 
 export function createGameMachine(
   genBoardLocation: GenBoardLocationPerEntitiy,
@@ -35,6 +65,10 @@ export function createGameMachine(
 
       states: {
         playGame: {
+          always: [
+            { target: "userWon", cond: "ifUserWon" },
+            { target: "pbWon", cond: "ifPbWon" },
+          ],
           on: {
             PB_TURN: [
               {
@@ -43,23 +77,7 @@ export function createGameMachine(
               },
               {
                 actions: assign((context) => {
-                  // TODO: move this to one function
-                  const turn = playTurn(
-                    context.userLastTurn,
-                    context.pbLastTurn,
-                    roleDiceFunc
-                  );
-
-                  const [board, location] = movePB(turn, context.board);
-                  context.pbLastTurn = turn.direction;
-                  context.board = board;
-                  context.pbLocation = location[0];
-
-                  return {
-                    pbLastTurn: turn.direction,
-                    board: board,
-                    pbLocation: location[0],
-                  };
+                  return executeTurn(context, movePB, roleDiceFunc);
                 }),
               },
             ],
@@ -70,22 +88,7 @@ export function createGameMachine(
               },
               {
                 actions: assign((context) => {
-                  // TODO: move this to one function
-                  const turn = playTurn(
-                    context.userLastTurn,
-                    context.pbLastTurn,
-                    roleDiceFunc
-                  );
-                  //TODO: in this state board must be initilize, this if is only to remove ts error
-                  const [board, location] = moveUser(turn, context.board);
-                  context.userLastTurn = turn.direction;
-                  context.board = board;
-                  context.pbLocation = location[0];
-                  return {
-                    userLastTurn: turn.direction,
-                    board: board,
-                    pbLocation: location[0],
-                  };
+                  return executeTurn(context, moveUser, roleDiceFunc);
                 }),
               },
             ],
