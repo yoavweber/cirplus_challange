@@ -45,6 +45,9 @@ const RollDiceButton: React.FC<RollDiceButtonProps> = ({ updateState }) => {
         cursor: "pointer",
         width: "182px",
         height: "48px",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
       }}
       onClick={() => updateState()}
     >
