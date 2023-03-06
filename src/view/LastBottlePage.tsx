@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 
 import { useMachine } from "@xstate/react";
 import { createIOMachine } from "../logic/io";
+import { GameBoard } from "./components/GameBoard";
 import { Header } from "./components/Header";
 
 export const LastBottlePage: React.FC = () => {
@@ -16,9 +17,9 @@ export const LastBottlePage: React.FC = () => {
   return (
     <div>
       <button onClick={() => send("START_GAME")}>start game</button>
-      {/* 
-      <button onClick={() => send("TURN")}>tests</button> */}
+
       <Header rollDice={rollDice} />
+      <GameBoard board={board} />
     </div>
   );
 };
