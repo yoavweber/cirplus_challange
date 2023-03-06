@@ -1,11 +1,12 @@
 import React from "react";
 import { Entities } from "../../Enteties/enteties";
+import userIcon from "../../assets/user_icon.png";
+import bottleIcon from "../../assets/bottle_icon.png";
 
 interface CellProps {
   entity: Entities;
 }
 
-const Colors = ["white", "blue", "green", "rgb(242,167,167)"];
 export const Cell: React.FC<CellProps> = ({ entity }) => {
   return (
     <div
@@ -16,10 +17,13 @@ export const Cell: React.FC<CellProps> = ({ entity }) => {
         alignItems: "center",
         height: "30px",
         width: "30px",
-        backgroundColor: `${Colors[entity]}`,
+        backgroundColor: `${
+          entity === Entities.GPgp ? "rgb(242,167,167)" : "white"
+        }`,
       }}
-    />
-
-    // </div>
+    >
+      {entity === Entities.User && <img src={userIcon} />}
+      {entity === Entities.PB && <img src={bottleIcon} />}
+    </div>
   );
 };
