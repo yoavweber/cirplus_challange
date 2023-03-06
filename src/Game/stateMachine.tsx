@@ -18,6 +18,7 @@ export interface MachineContext {
   pbLastTurn: Direction;
   userLastTurn: Direction;
   pbTurn: boolean;
+  step: number;
 }
 
 const playerWon = (playerLocation: Location, GPgpLocation: Location[]) => {
@@ -45,6 +46,7 @@ function executeTurn(
     playerLastTurn: turn.direction,
     board: board,
     playerLocation: location[0],
+    step: turn.move,
   };
 }
 
@@ -68,6 +70,7 @@ export function createGameMachine(
         pbLastTurn: Direction.North,
         userLastTurn: Direction.South,
         pbTurn: true,
+        step: 0,
       },
 
       states: {
@@ -122,7 +125,6 @@ export function createGameMachine(
           if (pbLocation) {
             const res = executeTurn(
               userLastTurn,
-              pbLastTurn,
               pbLocation,
               board,
               movePB,
@@ -147,6 +149,7 @@ export function createGameMachine(
             context.board = res.board;
             context.userLastTurn = res.playerLastTurn;
             context.userLocation = res.playerLocation;
+            context.step = res.step;
             return res;
           }
         },
