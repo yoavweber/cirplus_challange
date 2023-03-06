@@ -1,6 +1,5 @@
 import { Board } from "../Board/board";
-import { Turn, moveBoard } from "../Dice/dice";
-import { updateUserLocation, updatePBLocation } from "../Board/location";
+import { Turn, calculateMove } from "../Dice/dice";
 
 export type EntityLocation = [Board, Location[]];
 
@@ -19,9 +18,7 @@ export interface Location {
 export function moveUser(
   turn: Turn,
   board: Board,
-  prevLocation: Location
-): EntityLocation {
-  const res = moveBoard[turn.direction](turn.move);
+  const res = calculateMove[turn.direction](turn.move);
   const updatedLocation: Location = {
     Row: res.Row + prevLocation.Row,
     Column: res.Column + prevLocation.Column,

@@ -10,7 +10,7 @@ export enum Directions {
   Southeast = "Southeast",
   Southwest = "Southwest",
 }
-interface MoveBoard {
+interface CalculateMove {
   North: (move: number) => Location;
   Northeast: (move: number) => Location;
   Northwest: (move: number) => Location;
@@ -21,15 +21,16 @@ interface MoveBoard {
   Southwest: (move: number) => Location;
 }
 
-export const moveBoard: MoveBoard = {
-  North: (move: number) => ({ Column: move, Row: 0 }),
-  Northeast: (move: number) => ({ Column: move, Row: move }),
-  Northwest: (move: number) => ({ Column: move, Row: -move }),
+export const calculateMove: CalculateMove = {
+  North: (move: number) => ({ Column: -move, Row: 0 }),
+  Northeast: (move: number) => ({ Column: -move, Row: move }),
+  Northwest: (move: number) => ({ Column: -move, Row: -move }),
   West: (move: number) => ({ Column: 0, Row: -move }),
   East: (move: number) => ({ Column: 0, Row: move }),
-  South: (move: number) => ({ Column: -move, Row: 0 }),
-  Southeast: (move: number) => ({ Column: -move, Row: move }),
-  Southwest: (move: number) => ({ Column: -move, Row: -move }),
+  South: (move: number) => ({ Column: move, Row: 0 }),
+  Southeast: (move: number) => ({ Column: move, Row: move }),
+  Southwest: (move: number) => ({ Column: move, Row: -move }),
+};
 };
 
 function roleDirectionDice(

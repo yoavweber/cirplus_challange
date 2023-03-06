@@ -10,7 +10,7 @@ import {
   ROW_BOARD_SIZE,
   generateEmptyBoard,
 } from "./board";
-import { moveBoard, Directions } from "../Dice/dice";
+import { calculateMove, Direction } from "../Dice/dice";
 
 type EntityLocation = [Board, Location[]];
 
@@ -124,9 +124,9 @@ function _placeGPgpInitLocation(
 
 export function generateGPgp(location: Location): Location[] {
   let locations = [location];
-  for (const directionStr in moveBoard) {
-    let deraction = directionStr as Directions;
-    let step = moveBoard[deraction](1);
+  for (const directionStr in calculateMove) {
+    let deraction = directionStr as Direction;
+    let step = calculateMove[deraction](1);
     // TODO:create an append function
     let newLocation: Location = {
       Column: step.Column + location.Column,
