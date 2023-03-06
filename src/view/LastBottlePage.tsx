@@ -15,10 +15,11 @@ export const LastBottlePage: React.FC = () => {
     return res.context;
   };
   return (
-    <div>
-      <button onClick={() => send("START_GAME")}>start game</button>
-
+    <div style={{ maxWidth: "1350px", maxHeight: "850px" }}>
       <Header rollDice={rollDice} />
+      <div style={{ margin: "10px" }}>
+        <GameBoard board={board} />
+      </div>
       <Footer startGame={() => send("START_GAME")} />
     </div>
   );
