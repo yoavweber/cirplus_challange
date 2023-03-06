@@ -1,30 +1,26 @@
 // TODO: maybe change file name
-import { deepClone, randomIntFromInterval } from "../logic/utils";
-import { Entities, Location } from "../Enteties/enteties";
+import { deepClone } from "../logic/utils";
+import { Entities, Location, EntityLocation } from "../Enteties/enteties";
 import {
   Board,
-  getColumCoord,
-  getRowCoord,
+  getColumBound,
+  getRowBound,
   getBoardLocationData,
-  COLUMN_BOARD_SIZE,
-  ROW_BOARD_SIZE,
   generateEmptyBoard,
 } from "./board";
 import { calculateMove, Direction } from "../Dice/dice";
 
-type EntityLocation = [Board, Location[]];
-
-function _updateEntityLocation(
+export function _updateEntityLocation(
   location: Location,
   board: Board,
   entity: Entities
 ): EntityLocation {
   let clonedBoard = deepClone(board) as Board;
   const adjustedLocation: Location = {
-    Column: getColumCoord(location.Column),
-    Row: getRowCoord(location.Row),
+    Row: getRowBound(location.Row),
+    Column: getColumBound(location.Column),
   };
-  clonedBoard[adjustedLocation.Column][adjustedLocation.Row] = entity;
+  clonedBoard[adjustedLocation.Row][adjustedLocation.Column] = entity;
   return [clonedBoard, [adjustedLocation]];
 }
 
@@ -67,11 +63,7 @@ export function updatePGpgLocation(
   return updatePGpgLocation(locations, updatedBoard, updatedLocations);
 }
 
-export function genRandomBoardLocation(): Location {
-  const column = randomIntFromInterval(0, COLUMN_BOARD_SIZE);
-  const row = randomIntFromInterval(0, ROW_BOARD_SIZE);
-  return { Column: column, Row: row };
-}
+// TODO: move all io to seperate place
 
 //  ------------------------------- generating entities locations ---------------------
 type GenBoardLocationFunc = () => Location;
@@ -134,7 +126,6 @@ export function generateGPgp(location: Location): Location[] {
   for (const directionStr in calculateMove) {
     let deraction = directionStr as Direction;
     let step = calculateMove[deraction](1);
-    // TODO:create an append function
     let newLocation: Location = {
       Column: step.Column + location.Column,
       Row: step.Row + location.Row,
@@ -144,7 +135,6 @@ export function generateGPgp(location: Location): Location[] {
   return locations;
 }
 
-// TODO: change naming
 type UserLocation = Location[];
 type PbLocation = Location[];
 type GPgpLocation = Location[];
