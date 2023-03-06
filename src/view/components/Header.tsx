@@ -85,14 +85,15 @@ export const Header: React.FC<HeaderProps> = ({ rollDice }) => {
     <div
       style={{
         display: "flex",
-        justifyContent: "space-around",
+        justifyContent: "space-between",
         alignItems: "center",
+        margin: "0 50px",
       }}
     >
       <div>
         <h1 style={{ color: "rgb(121,121,121)" }}>The Last Bottle</h1>
       </div>
-      <div style={{ display: "flex" }}>
+      <div style={{ display: "flex", alignItems: "center" }}>
         <DirectionContainer number={1} direction={direction} />
         <StepContainer number={1} />
         <RollDiceButton updateState={updateState} />
