@@ -2,8 +2,8 @@ import React, { useMemo } from "react";
 
 import { useMachine } from "@xstate/react";
 import { createIOMachine } from "../logic/io";
-import { GameBoard } from "./components/GameBoard";
-import { Header } from "./components/Header";
+import { GameBoard } from "./gameBoard/GameBoard";
+import { Header } from "./header/Header";
 
 export const LastBottlePage: React.FC = () => {
   const machine = useMemo(() => createIOMachine, []);
