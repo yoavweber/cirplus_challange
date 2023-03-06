@@ -42,6 +42,13 @@ export function updatePBLocation(
   return _updateEntityLocation(location, board, Entities.PB);
 }
 
+export function updateEmptyLocation(
+  location: Location,
+  board: Board
+): EntityLocation {
+  return _updateEntityLocation(location, board, Entities.Empty);
+}
+
 export function updatePGpgLocation(
   locations: Location[],
   board: Board,

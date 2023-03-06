@@ -3,7 +3,7 @@ import { Turn, calculateMove } from "../Dice/dice";
 import {
   updateUserLocation,
   updatePBLocation,
-  updateEmptyLocatiom,
+  updateEmptyLocation,
 } from "../Board/location";
 
 export type EntityLocation = [Board, Location[]];
@@ -26,7 +26,7 @@ function _movePlayer(
   updateLocation: (updatedLocation: Location, board: Board) => EntityLocation
 ) {
   const res = calculateMove[turn.direction](turn.move);
-  const [cleanPrevLocationBoard, _] = updateEmptyLocatiom(prevLocation, board);
+  const [cleanPrevLocationBoard, _] = updateEmptyLocation(prevLocation, board);
   const updatedLocation: Location = {
     Row: res.Row + prevLocation.Row,
     Column: res.Column + prevLocation.Column,
