@@ -1,5 +1,10 @@
 import { Board } from "../Board/board";
 import { Turn, calculateMove } from "../Dice/dice";
+import {
+  updateUserLocation,
+  updatePBLocation,
+  updateEmptyLocatiom,
+} from "../Board/location";
 
 export type EntityLocation = [Board, Location[]];
 
@@ -14,16 +19,27 @@ export interface Location {
   Column: number;
   Row: number;
 }
-
-export function moveUser(
+function _movePlayer(
   turn: Turn,
   board: Board,
+  prevLocation: Location,
+  updateLocation: (updatedLocation: Location, board: Board) => EntityLocation
+) {
   const res = calculateMove[turn.direction](turn.move);
+  const [cleanPrevLocationBoard, _] = updateEmptyLocatiom(prevLocation, board);
   const updatedLocation: Location = {
     Row: res.Row + prevLocation.Row,
     Column: res.Column + prevLocation.Column,
   };
-  return updateUserLocation(updatedLocation, board);
+  return updateLocation(updatedLocation, cleanPrevLocationBoard);
+}
+
+export function moveUser(
+  turn: Turn,
+  board: Board,
+  prevLocation: Location
+): EntityLocation {
+  return _movePlayer(turn, board, prevLocation, updateUserLocation);
 }
 
 export function movePB(
@@ -31,10 +47,5 @@ export function movePB(
   board: Board,
   prevLocation: Location
 ): EntityLocation {
-  const res = moveBoard[turn.direction](turn.move);
-  const updatedLocation: Location = {
-    Row: res.Row + prevLocation.Row,
-    Column: res.Column + prevLocation.Column,
-  };
-  return updatePBLocation(updatedLocation, board);
+  return _movePlayer(turn, board, prevLocation, updatePBLocation);
 }
