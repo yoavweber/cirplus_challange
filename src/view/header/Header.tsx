@@ -26,6 +26,7 @@ const containerStyle = {
   gap: "10px",
   padding: "10px",
   alignItems: "center",
+  height: "69px",
 };
 
 const boxStyle = {
@@ -38,8 +39,16 @@ const boxStyle = {
 };
 const RollDiceButton: React.FC<RollDiceButtonProps> = ({ updateState }) => {
   return (
-    <button style={{ backgroundColor: "black" }} onClick={() => updateState()}>
-      <p style={{ color: "white" }}>send state</p>
+    <button
+      style={{
+        backgroundColor: "black",
+        cursor: "pointer",
+        width: "182px",
+        height: "48px",
+      }}
+      onClick={() => updateState()}
+    >
+      <h4 style={{ color: "white" }}>ROLL DICE</h4>
     </button>
   );
 };
@@ -70,15 +79,13 @@ const StepContainer: React.FC<{ number: number }> = ({ number }) => {
 
 export const Header: React.FC<HeaderProps> = ({ rollDice }) => {
   const [direction, setDirection] = useState<Direction>(Direction.North);
-  const [directionNumber, setDirectionNumber] = useState<Direction>(
-    Direction.North
-  );
-
+  const [directionNumber, setDirectionNumber] = useState<number>(0);
   const [step, setStep] = useState<number>(0);
 
   const updateState = () => {
     const context = rollDice();
     setDirection(context.userLastTurn);
+    setDirectionNumber(context.directionNumber);
     setStep(context.step);
   };
   return (
@@ -94,8 +101,8 @@ export const Header: React.FC<HeaderProps> = ({ rollDice }) => {
         <h1 style={{ color: "rgb(121,121,121)" }}>The Last Bottle</h1>
       </div>
       <div style={{ display: "flex", alignItems: "center" }}>
-        <DirectionContainer number={1} direction={direction} />
-        <StepContainer number={1} />
+        <DirectionContainer number={directionNumber} direction={direction} />
+        <StepContainer number={step} />
         <RollDiceButton updateState={updateState} />
       </div>
     </div>
