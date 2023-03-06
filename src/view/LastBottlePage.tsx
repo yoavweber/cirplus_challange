@@ -19,7 +19,7 @@ export const LastBottlePage: React.FC = () => {
       <button onClick={() => send("START_GAME")}>start game</button>
 
       <Header rollDice={rollDice} />
-      <GameBoard board={board} />
+      <Footer startGame={() => send("START_GAME")} />
     </div>
   );
 };
