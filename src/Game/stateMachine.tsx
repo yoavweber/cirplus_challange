@@ -8,7 +8,13 @@ import {
   moveUser,
   EntityLocation,
 } from "../Enteties/enteties";
-import { Direction, playTurn, DiceFuncs, Turn } from "../Dice/dice";
+import {
+  Direction,
+  playTurn,
+  playFirstTurn,
+  DiceFuncs,
+  Turn,
+} from "../Dice/dice";
 
 export interface MachineContext {
   board: Board;
@@ -52,7 +58,8 @@ function executeTurn(
 
 export function createGameMachine(
   genBoardLocation: GenBoardLocationPerEntitiy,
-  roleDiceFunc: DiceFuncs
+  roleDiceFunc: DiceFuncs,
+  initDiceFunc: DiceFuncs
 ) {
   return createMachine(
     {
@@ -81,7 +88,7 @@ export function createGameMachine(
               actions: "initBoard",
             },
           },
-          exit: ["playPbTurn"],
+          exit: ["initTurn"],
         },
         playGame: {
           always: [
@@ -151,6 +158,23 @@ export function createGameMachine(
             context.userLocation = res.playerLocation;
             context.step = res.step;
             return res;
+          }
+        },
+        initTurn: (context, _) => {
+          const { board, pbLocation } = context;
+          if (pbLocation) {
+            const turn = playFirstTurn(initDiceFunc);
+            const [newBoard, location] = movePB(turn, board, pbLocation);
+            context.board = newBoard;
+            context.pbLocation = location[0];
+            context.pbLastTurn = turn.direction;
+
+            return {
+              pbLastTurn: turn.direction,
+              board: newBoard,
+              PbLocation: location[0],
+              step: turn.move,
+            };
           }
         },
         initBoard: (context, _) => {

@@ -5,13 +5,17 @@ import { DiceFuncs } from "../Dice/dice";
 import { GenBoardLocationPerEntitiy } from "../Board/location";
 import { createGameMachine } from "../Game/stateMachine";
 
-function roleDice() {
+export function roleDice() {
   return randomIntFromInterval(1, 6);
 }
 
-function genRandomBoardLocation(): Location {
-  const column = randomIntFromInterval(0, COLUMN_BOARD_SIZE);
-  const row = randomIntFromInterval(0, ROW_BOARD_SIZE);
+export function initRoleDice() {
+  return randomIntFromInterval(1, 8);
+}
+
+export function genRandomBoardLocation(): Location {
+  const column = randomIntFromInterval(0, ROW_BOARD_SIZE);
+  const row = randomIntFromInterval(0, COLUMN_BOARD_SIZE);
   return { Column: column, Row: row };
 }
 
@@ -26,6 +30,10 @@ export function createIOMachine(): ReturnType<typeof createGameMachine> {
     [Entities.GPgp]: genRandomBoardLocation,
   };
 
-  const machine = createGameMachine(boardGenFuncs, roleDiceFuncs);
+  const initDice: DiceFuncs = {
+    move: roleDice,
+    direction: initRoleDice,
+  };
+  const machine = createGameMachine(boardGenFuncs, roleDiceFuncs, initDice);
   return machine;
 }

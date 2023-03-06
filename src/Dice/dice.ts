@@ -56,6 +56,13 @@ function roleDirectionDice(
   return allowedDirections[res];
 }
 
+
+function roleInitDirectionDice(roleDice: () => number): Direction {
+  const directions = Object.keys(Direction).map((elm) => elm as Direction);
+  const diceRole = roleDice();
+  return directions[diceRole];
+}
+
 function roleMoveDice(roleDice: () => number): number {
   return roleDice();
 }
@@ -85,5 +92,11 @@ export type DiceFuncs = {
 export function playTurn(prevPlayerTurn: Direction, diceFunc: DiceFuncs): Turn {
   const move = roleMoveDice(diceFunc.move);
   const direction = roleDirectionDice(diceFunc.direction, prevPlayerTurn);
+  return { move: move, direction: direction };
+}
+
+export function playFirstTurn(diceFunc: DiceFuncs): Turn {
+  const move = roleMoveDice(diceFunc.move);
+  const direction = roleInitDirectionDice(diceFunc.direction);
   return { move: move, direction: direction };
 }
