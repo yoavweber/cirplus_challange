@@ -25,7 +25,7 @@ function _movePlayer(
   prevLocation: Location,
   updateLocation: (updatedLocation: Location, board: Board) => EntityLocation
 ) {
-  const res = calculateMove[turn.direction](turn.move);
+  const res = calculateMove[turn.direction](turn.step);
   const [cleanPrevLocationBoard, _] = updateEmptyLocation(prevLocation, board);
   const updatedLocation: Location = {
     Row: res.Row + prevLocation.Row,

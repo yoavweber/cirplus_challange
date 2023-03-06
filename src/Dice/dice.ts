@@ -44,7 +44,7 @@ export const oppositeDirections = {
 };
 
 function roleDirectionDice(
-  roleDice: () => number,
+  directionNumber: number,
   prevPlayerDirection: Direction
 ): Direction {
   const oppositeDirection = oppositeDirections[prevPlayerDirection];
@@ -52,15 +52,12 @@ function roleDirectionDice(
     prevPlayerDirection,
     oppositeDirection
   );
-  const res = roleDice();
-  return allowedDirections[res];
+  return allowedDirections[directionNumber];
 }
 
-
-function roleInitDirectionDice(roleDice: () => number): Direction {
+function roleInitDirectionDice(directionNumber: number): Direction {
   const directions = Object.keys(Direction).map((elm) => elm as Direction);
-  const diceRole = roleDice();
-  return directions[diceRole];
+  return directions[directionNumber];
 }
 
 function roleMoveDice(roleDice: () => number): number {
@@ -81,8 +78,9 @@ function getAllowedDirections(
 }
 
 export type Turn = {
-  move: number;
+  step: number;
   direction: Direction;
+  directionNumber: number;
 };
 export type DiceFuncs = {
   move: () => number;
@@ -90,13 +88,16 @@ export type DiceFuncs = {
 };
 
 export function playTurn(prevPlayerTurn: Direction, diceFunc: DiceFuncs): Turn {
-  const move = roleMoveDice(diceFunc.move);
-  const direction = roleDirectionDice(diceFunc.direction, prevPlayerTurn);
-  return { move: move, direction: direction };
+  const step = roleMoveDice(diceFunc.move);
+  const directionNumber = diceFunc.direction();
+  const direction = roleDirectionDice(directionNumber, prevPlayerTurn);
+  return { step: step, direction: direction, directionNumber: directionNumber };
 }
 
 export function playFirstTurn(diceFunc: DiceFuncs): Turn {
-  const move = roleMoveDice(diceFunc.move);
-  const direction = roleInitDirectionDice(diceFunc.direction);
-  return { move: move, direction: direction };
+  const step = roleMoveDice(diceFunc.move);
+  const directionNumber = diceFunc.direction();
+
+  const direction = roleInitDirectionDice(directionNumber);
+  return { step: step, direction: direction, directionNumber: directionNumber };
 }
