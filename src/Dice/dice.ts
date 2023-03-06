@@ -1,6 +1,6 @@
 import { Location } from "../Enteties/enteties";
 
-export enum Directions {
+export enum Direction {
   North = "North",
   Northeast = "Northeast",
   Northwest = "Northwest",
@@ -31,14 +31,27 @@ export const calculateMove: CalculateMove = {
   Southeast: (move: number) => ({ Column: move, Row: move }),
   Southwest: (move: number) => ({ Column: move, Row: -move }),
 };
+
+export const oppositeDirections = {
+  North: Direction.South,
+  Northeast: Direction.Southwest,
+  Northwest: Direction.Southeast,
+  West: Direction.East,
+  East: Direction.West,
+  South: Direction.North,
+  Southeast: Direction.Northwest,
+  Southwest: Direction.Northeast,
 };
 
 function roleDirectionDice(
   roleDice: () => number,
-  userTurn: Direction,
-  pbTurn: Direction
+  prevPlayerDirection: Direction
 ): Direction {
-  const allowedDirections = getAllowedDirections(userTurn, pbTurn);
+  const oppositeDirection = oppositeDirections[prevPlayerDirection];
+  const allowedDirections = getAllowedDirections(
+    prevPlayerDirection,
+    oppositeDirection
+  );
   const res = roleDice();
   return allowedDirections[res];
 }
@@ -49,12 +62,12 @@ function roleMoveDice(roleDice: () => number): number {
 
 function getAllowedDirections(
   prevUserDirection: Direction,
-  prevBottleDirection: Direction
+  oppositeDirection: Direction
 ): Direction[] {
   const allowedDirection = Object.keys(Direction)
     .filter(
       (direction) =>
-        direction != prevBottleDirection || direction != prevUserDirection
+        direction != oppositeDirection || direction != prevUserDirection
     )
     .map((elm) => elm as Direction);
   return allowedDirection;
@@ -69,12 +82,8 @@ export type DiceFuncs = {
   direction: () => number;
 };
 
-export function playTurn(
-  userTurn: Direction,
-  pbTurn: Direction,
-  diceFunc: DiceFuncs
-): Turn {
+export function playTurn(prevPlayerTurn: Direction, diceFunc: DiceFuncs): Turn {
   const move = roleMoveDice(diceFunc.move);
-  const direction = roleDirectionDice(diceFunc.direction, userTurn, pbTurn);
+  const direction = roleDirectionDice(diceFunc.direction, prevPlayerTurn);
   return { move: move, direction: direction };
 }

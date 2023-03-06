@@ -29,8 +29,7 @@ const playerWon = (playerLocation: Location, GPgpLocation: Location[]) => {
 };
 
 function executeTurn(
-  userLastTurn: Direction,
-  pbLastTurn: Direction,
+  prevPlayerDirection: Direction,
   playerLocation: Location,
   oldBoard: Board,
   movePlayer: (
@@ -40,7 +39,7 @@ function executeTurn(
   ) => EntityLocation,
   roleDiceFunc: DiceFuncs
 ) {
-  const turn = playTurn(userLastTurn, pbLastTurn, roleDiceFunc);
+  const turn = playTurn(prevPlayerDirection, roleDiceFunc);
   const [board, location] = movePlayer(turn, oldBoard, playerLocation);
   return {
     playerLastTurn: turn.direction,
@@ -119,7 +118,7 @@ export function createGameMachine(
       },
       actions: {
         playPbTurn: (context, _) => {
-          const { userLastTurn, pbLastTurn, pbLocation, board } = context;
+          const { userLastTurn, pbLocation, board } = context;
           if (pbLocation) {
             const res = executeTurn(
               userLastTurn,
@@ -136,14 +135,13 @@ export function createGameMachine(
           }
         },
         playUserTurn: (context, _) => {
-          const { userLastTurn, pbLastTurn, userLocation, board } = context;
+          const { pbLastTurn, userLocation, board } = context;
           if (userLocation) {
             const res = executeTurn(
-              userLastTurn,
               pbLastTurn,
               userLocation,
               board,
-              movePB,
+              moveUser,
               roleDiceFunc
             );
             context.board = res.board;
