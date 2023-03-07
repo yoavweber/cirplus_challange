@@ -74,10 +74,10 @@ export function createGameMachine(
 
       states: {
         idle: {
+          entry: ["initBoard"],
           on: {
             START_GAME: {
               target: "playGame",
-              actions: "initBoard",
             },
           },
           exit: ["initTurn"],
@@ -153,7 +153,6 @@ export function createGameMachine(
             context.board = newBoard;
             context.pbLocation = location[0];
             context.pbLastTurn = turn.direction;
-
             return {
               pbLastTurn: turn.direction,
               board: newBoard,
