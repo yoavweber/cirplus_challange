@@ -15,7 +15,7 @@ export function generateEmptyBoard(): Board {
 
 function _getBoardBound(location: number, border: number): number {
   if (location > border) {
-    return _getBoardBound(location - border, border);
+    return _getBoardBound(location - border + 1, border);
   } else if (location < 0) {
     return _getBoardBound(border + location, border);
   }
@@ -34,5 +34,13 @@ export function getBoardLocationData(
   board: Board,
   location: Location
 ): Entities {
+  if (
+    location.Row > ROW_BOARD_SIZE - 1 ||
+    location.Column > COLUMN_BOARD_SIZE - 1
+  ) {
+    throw new Error(
+      `can't get the location data of the board as the location is out of bound. recived the following input: Column: ${location.Column} Row: ${location.Row}`
+    );
+  }
   return board[location.Row][location.Column];
 }
