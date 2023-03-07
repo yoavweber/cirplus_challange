@@ -1,7 +1,10 @@
 ## Run Game
-* In order to run the game, install the dependencies by running: `yarn` and run the program by running `yarn start`
+* Clone the repo
+* Install the dependencies by running: `yarn`
+* Run the program by running `yarn start`
 * In order the start the game, press on the "START" button.
-* In order to move your player, press on "roll dice"
+* In order to move your player, press on "ROLL DICE"
+* Once one of the player has reach the GPgp area, the game would be over. to restart the game refresh the page
 
 
 ## Available Scripts
