@@ -1,10 +1,11 @@
 import { Location, Entities } from "../Enteties/enteties";
-import { createGameMachine } from "./stateMachine";
+import { createGameMachine, MachineContext } from "./stateMachine";
 import { GenBoardLocationPerEntitiy } from "../Board/location";
-import { getBoardLocationData } from "../Board/board";
+import { generateEmptyBoard } from "../Board/board";
 import { DiceFuncs, Direction } from "../Dice/dice";
 import { interpret } from "xstate";
-import { compareObj } from "../logic/utils";
+import { compareObj } from "../utils";
+import { isUserWon } from "./guards";
 
 const mockuserLocation = { Column: 1, Row: 1 } as Location;
 const mockPBLocation = { Column: 5, Row: 5 } as Location;
@@ -32,13 +33,11 @@ describe("test state machine game", () => {
   });
 
   test("pb makes move", (done) => {
-    const pbExpectedLocation: Location = { Row: 4, Column: 4 };
-    // console.log(gameStateMachine.context);
+    const pbExpectedLocation: Location = { Row: 5, Column: 5 };
     const interpretMachine = interpret(gameStateMachine).onTransition(
       (context) => {
         const { pbLocation } = context.context;
         if (pbLocation && compareObj(pbLocation, pbExpectedLocation)) {
-          // assert that effects were executed
           expect(true).toBeTruthy();
           done();
         }

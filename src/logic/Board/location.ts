@@ -1,5 +1,5 @@
 // TODO: maybe change file name
-import { deepClone } from "../logic/utils";
+import { deepClone } from "../utils";
 import { Entities, Location, EntityLocation } from "../Enteties/enteties";
 import {
   Board,

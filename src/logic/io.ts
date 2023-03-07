@@ -1,9 +1,9 @@
 import { randomIntFromInterval } from "./utils";
-import { Location, Entities } from "../Enteties/enteties";
-import { COLUMN_BOARD_SIZE, ROW_BOARD_SIZE } from "../Board/board";
-import { DiceFuncs } from "../Dice/dice";
-import { GenBoardLocationPerEntitiy } from "../Board/location";
-import { createGameMachine } from "../Game/stateMachine";
+import { Location, Entities } from "./Enteties/enteties";
+import { COLUMN_BOARD_SIZE, ROW_BOARD_SIZE } from "../logic/Board/board";
+import { DiceFuncs } from "./Dice/dice";
+import { GenBoardLocationPerEntitiy } from "../logic/Board/location";
+import { createGameMachine } from "./Game/stateMachine";
 
 export function roleDice() {
   return randomIntFromInterval(1, 6);

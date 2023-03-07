@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import { Direction } from "../../Dice/dice";
-import { MachineContext } from "../../Game/stateMachine";
-
+import { Direction } from "../../logic/Dice/dice";
+import { MachineContext } from "../../logic/Game/stateMachine";
 interface HeaderProps {
   rollDice: () => MachineContext;
 }

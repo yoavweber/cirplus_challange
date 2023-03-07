@@ -1,5 +1,5 @@
 import React from "react";
-import { Entities } from "../../Enteties/enteties";
+import { Entities } from "../../logic/Enteties/enteties";
 import userIcon from "../../assets/user_icon.png";
 import bottleIcon from "../../assets/bottle_icon.png";
 

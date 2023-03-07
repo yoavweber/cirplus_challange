@@ -1,7 +1,7 @@
 import { createMachine } from "xstate";
 import { initBoard, GenBoardLocationPerEntitiy } from "../Board/location";
 import { Board, generateEmptyBoard } from "../Board/board";
-import { Maybe } from "../logic/types";
+import { Maybe } from "../types";
 import {
   Location,
   movePB,
@@ -15,6 +15,7 @@ import {
   DiceFuncs,
   Turn,
 } from "../Dice/dice";
+import { compareObj } from "../utils";
 
 export interface MachineContext {
   board: Board;
@@ -115,9 +116,12 @@ export function createGameMachine(
     {
       guards: {
         ifUserWon: (context, _) => {
-          const { userLocation, GPgpLocation } = context;
-          if (userLocation && GPgpLocation) {
-            return playerWon(userLocation, GPgpLocation);
+          const { userLocation, GPgpLocation, pbLocation } = context;
+          if (userLocation && GPgpLocation && pbLocation) {
+            return (
+              playerWon(userLocation, GPgpLocation) ||
+              compareObj(userLocation, pbLocation)
+            );
           }
           return false;
         },
@@ -160,6 +164,7 @@ export function createGameMachine(
             context.userLastTurn = res.playerLastTurn;
             context.userLocation = res.playerLocation;
             context.step = res.step;
+            context.directionNumber = res.directionNumber;
             return res;
           }
         },
@@ -185,6 +190,7 @@ export function createGameMachine(
             initBoard(genBoardLocation);
           context.board = board;
           context.userLocation = userLocation[0];
+          console.log(context.userLocation, "init board");
           context.pbLocation = PbLocation[0];
           context.GPgpLocation = GPgpLocation;
           return {

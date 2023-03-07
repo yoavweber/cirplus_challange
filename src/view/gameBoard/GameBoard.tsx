@@ -1,6 +1,5 @@
 import React from "react";
-import { Entities } from "../../Enteties/enteties";
-import { Board, COLUMN_BOARD_SIZE, ROW_BOARD_SIZE } from "../../Board/board";
+} from "../..//logic/Board/board";
 import { Cell } from "./Cell";
 
 interface GameBoardProps {

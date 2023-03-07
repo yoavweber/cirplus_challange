@@ -13,7 +13,6 @@ export function generateEmptyBoard(): Board {
   return arr;
 }
 
-// TODO: change the name to something with board bounds
 function _getBoardBound(location: number, border: number): number {
   if (location > border) {
     return _getBoardBound(location - border, border);
@@ -37,4 +36,3 @@ export function getBoardLocationData(
 ): Entities {
   return board[location.Row][location.Column];
 }
-
