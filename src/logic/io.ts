@@ -14,8 +14,8 @@ export function initRoleDice() {
 }
 
 export function genRandomBoardLocation(): Location {
-  const column = randomIntFromInterval(0, ROW_BOARD_SIZE);
-  const row = randomIntFromInterval(0, COLUMN_BOARD_SIZE);
+  const column = randomIntFromInterval(0, COLUMN_BOARD_SIZE - 1);
+  const row = randomIntFromInterval(0, ROW_BOARD_SIZE - 1);
   return { Column: column, Row: row };
 }
 
