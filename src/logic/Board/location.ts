@@ -10,6 +10,8 @@ import {
 } from "./board";
 import { calculateMove, Direction } from "../Dice/dice";
 
+
+// ------------------------------ update entity location -----------------
 export function _updateEntityLocation(
   location: Location,
   board: Board,
@@ -111,7 +113,6 @@ function _placePBInitLocation(
   return _placeInitEntityLocation(board, Entities.PB, genBoardLocation);
 }
 
-// TODO: add docs to the function
 function _placeGPgpInitLocation(
   genBoardLocation: GenBoardLocationFunc
 ): EntityLocation {

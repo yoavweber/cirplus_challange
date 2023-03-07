@@ -19,6 +19,8 @@ export interface Location {
   Column: number;
   Row: number;
 }
+
+
 function _movePlayer(
   turn: Turn,
   board: Board,
