@@ -48,3 +48,28 @@ describe("test state machine game", () => {
     interpretMachine.send(["START_GAME", "TURN"]);
   });
 });
+
+describe("test state machine guards", () => {
+  const mockContext = (context: Partial<MachineContext>): MachineContext => {
+    return {
+      board: generateEmptyBoard(),
+      directionNumber: 2,
+      GPgpLocation: [{ Column: 1, Row: 2 }],
+      pbLastTurn: Direction.East,
+      userLastTurn: Direction.North,
+      pbLocation: { Column: 4, Row: 3 },
+      userLocation: { Column: 3, Row: 3 },
+      step: 2,
+      ...context,
+    };
+  };
+
+  test("user win if pb and user is at the same location", () => {
+    const playersLocation = {
+      pbLocation: { Column: 3, Row: 3 },
+      userLocation: { Column: 3, Row: 3 },
+    };
+    const context = mockContext(playersLocation);
+    expect(isUserWon(context)).toBe(true);
+  });
+});

@@ -15,27 +15,17 @@ import {
   DiceFuncs,
   Turn,
 } from "../Dice/dice";
-import { compareObj } from "../utils";
-
+import { isUserWon, isPbWon } from "./guards";
 export interface MachineContext {
   board: Board;
   userLocation: Maybe<Location>;
   pbLocation: Maybe<Location>;
   GPgpLocation: Maybe<Location[]>;
-  pbLastTurn: Direction;
-  userLastTurn: Direction;
-  pbTurn: boolean;
+  pbLastTurn: Maybe<Direction>;
+  userLastTurn: Maybe<Direction>;
   step: number;
   directionNumber: number;
 }
-
-const playerWon = (playerLocation: Location, GPgpLocation: Location[]) => {
-  return GPgpLocation.some(
-    (location) =>
-      location.Row === playerLocation.Row &&
-      location.Column === playerLocation.Column
-  );
-};
 
 function executeTurn(
   prevPlayerDirection: Direction,
@@ -76,10 +66,8 @@ export function createGameMachine(
         userLocation: null,
         pbLocation: null,
         GPgpLocation: null,
-        // TODO: ask him what is the default
-        pbLastTurn: Direction.North,
-        userLastTurn: Direction.South,
-        pbTurn: true,
+        pbLastTurn: null,
+        userLastTurn: null,
         step: 0,
         directionNumber: 0,
       },
@@ -116,27 +104,16 @@ export function createGameMachine(
     {
       guards: {
         ifUserWon: (context, _) => {
-          const { userLocation, GPgpLocation, pbLocation } = context;
-          if (userLocation && GPgpLocation && pbLocation) {
-            return (
-              playerWon(userLocation, GPgpLocation) ||
-              compareObj(userLocation, pbLocation)
-            );
-          }
-          return false;
+          return isUserWon(context);
         },
         ifPbWon: (context, _) => {
-          const { pbLocation, GPgpLocation } = context;
-          if (pbLocation && GPgpLocation) {
-            return playerWon(pbLocation, GPgpLocation);
-          }
-          return false;
+          return isPbWon(context);
         },
       },
       actions: {
         playPbTurn: (context, _) => {
           const { userLastTurn, pbLocation, board } = context;
-          if (pbLocation) {
+          if (pbLocation && userLastTurn) {
             const res = executeTurn(
               userLastTurn,
               pbLocation,
@@ -152,7 +129,7 @@ export function createGameMachine(
         },
         playUserTurn: (context, _) => {
           const { pbLastTurn, userLocation, board } = context;
-          if (userLocation) {
+          if (userLocation && pbLastTurn) {
             const res = executeTurn(
               pbLastTurn,
               userLocation,
@@ -190,7 +167,6 @@ export function createGameMachine(
             initBoard(genBoardLocation);
           context.board = board;
           context.userLocation = userLocation[0];
-          console.log(context.userLocation, "init board");
           context.pbLocation = PbLocation[0];
           context.GPgpLocation = GPgpLocation;
           return {
