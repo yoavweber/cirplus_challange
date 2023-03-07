@@ -14,7 +14,6 @@ export const Header: React.FC<HeaderProps> = ({ rollDice }) => {
 
   const updateState = () => {
     const context = rollDice();
-    console.log(context, "update state");
     if (context.userLastTurn) {
       setDirection(context.userLastTurn);
       setDirectionNumber(context.directionNumber);
